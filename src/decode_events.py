@@ -2,10 +2,13 @@ import rosbag
 from event_array_py import Decoder
 
 topic = '/event_camera/events'
-bag = rosbag.Bag('evk1_events_run_4.bag')
-output_file = 'evk1_events_run_4.csv'
+bag = rosbag.Bag('evk1_events_run_3.bag')
+output_file = 'evk1_events_run_3.csv'
 decoder = Decoder()
 
+number_of_events = 0
+number_of_pos_events = 0
+number_of_neg_events = 0
 with open(output_file, 'w') as csv_file:
     for topic, msg, t in bag.read_messages(topics=topic):
         decoder.decode_bytes(msg.encoding, msg.width, msg.height,
@@ -25,3 +28,12 @@ with open(output_file, 'w') as csv_file:
             print("t: " + str(t) + ", x: " + str(x) + ", y: " + str(y) +
                   ", p: " + str(p))
             csv_file.write("%d,%d,%d,%f\n" % (x, y, p, t))
+            number_of_events += 1
+            if p > 0:
+                number_of_pos_events += 1
+            else:
+                number_of_neg_events += 1
+
+print("Number of events: " + str(number_of_events))
+print("Number of pos events: " + str(number_of_pos_events))
+print("Number of neg events: " + str(number_of_neg_events))
